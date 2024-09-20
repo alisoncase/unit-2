@@ -5,15 +5,13 @@ var map;
 function createMap(){
     //create the map
     map = L.map('map', {
-        center: [56.1946291535801, 15.245700543391719],
-        zoom: 3
+        center: [20, 0],
+        zoom: 2
     });
 
     //add OSM base tilelayer
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-	    maxZoom: 16,
-        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-        ext: 'png'
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
     }).addTo(map);
 
     //call getData function
@@ -36,7 +34,7 @@ function onEachFeature(feature, layer) {
 //function to retrieve the data and place it on the map
 function getData(){
     //load the data
-    fetch("data/elderlyDependencyRatioEuroCities.geojson")
+    fetch("data/MegaCities.geojson")
         .then(function(response){
             return response.json();
         })
@@ -44,7 +42,7 @@ function getData(){
             //create marker options
             var geojsonMarkerOptions = {
                 radius: 8,
-                fillColor: "#998ec3",
+                fillColor: "#ff7800",
                 color: "#000",
                 weight: 1,
                 opacity: 1,
