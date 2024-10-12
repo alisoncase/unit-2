@@ -6,7 +6,7 @@ Data source: OECD https://stats.oecd.org */
 
 // Declare map variable globally so all functions have access
 var map;
-var minValue;
+var dataStats = {};
 
 // Function to instantiate the Leaflet map
 function createMap(){
@@ -29,7 +29,7 @@ function createMap(){
 };
 
 // Function to calcuate minimum value
-function calculateMinValue(data){
+function calcStats(data){
     // Create empty array to store all data values
     var allValues = [];
     // Loop through each city
@@ -42,18 +42,33 @@ function calculateMinValue(data){
               allValues.push(value);
         }
     }
-    // Get minimum value of our array
-    var minValue = Math.min(...allValues)
-    return minValue;
-}
+    //get min, max, mean stats for our array
+    dataStats.min = Math.min(...allValues);
+    dataStats.max = Math.max(...allValues);
+    //calculate meanValue
+    var sum = allValues.reduce(function(a, b){return a+b;});
+    dataStats.mean = sum/allValues.length;
+};
 
 // Calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     // Constant factor adjusts symbol sizes evenly
     var minRadius = 5;
     // Flannery Apperance Compensation formula
-    var radius = 1.0083 * Math.pow(attValue/minValue,0.5715) * minRadius
+    var radius = 1.0083 * Math.pow(attValue/dataStats.min,0.5715) * minRadius
     return radius;
+};
+
+// Function to define content for popups
+function createPopupContent(properties, attribute){
+    //add city to popup content string
+    var popupContent = "<p><b>City:</b> " + properties.city + "</p>";
+
+    //add formatted attribute to panel content string
+    var year = attribute;
+    popupContent += "<p><b>Elderly dependency ratio in " + year + ":</b> " + properties[attribute] + " percent</p>";
+
+    return popupContent;
 };
 
 // Function to convert markers to circle markers
@@ -66,7 +81,7 @@ function pointToLayer(feature, latlng, attributes){
     //Create marker options
     var options = {
         fillColor: "#998ec3",
-        color: "#756bb1",
+        color: "#252525",
         weight: 1,
         opacity: 1,
         fillOpacity: 0.8
@@ -75,14 +90,11 @@ function pointToLayer(feature, latlng, attributes){
     // For each feature, determine its value for the selected attribute
     var attValue = Number(feature.properties[attribute]);
     // Give each feature's circle marker a radius based on its attribute value
-    options.radius = calcPropRadius(attValue);
+    options.radius = calcPropRadius(attValue, dataStats.min);
     // Create circle marker layer
     var layer = L.circleMarker(latlng, options);
-    // Build popup content string
-    var popupContent = "<p><b>City:</b> " + feature.properties.city + "</p>";
-    // Add formatted attribute to popup content string
-    var year = attribute;
-    popupContent += "<p><b>Elderly dependency ratio in " + year + ":</b> " + feature.properties[attribute] + " percent</p>";
+    // Define popup content
+    var popupContent = createPopupContent(feature.properties, attribute);
     // Bind the popup to the circle marker
     layer.bindPopup(popupContent, {
         offset: new L.Point(0,-options.radius) 
@@ -103,25 +115,23 @@ function createPropSymbols(data, attributes){
 
 // Function to resize proportional symbols according to new attribute values by year
 function updatePropSymbols(attribute){
+    var year = attribute
+    //update temporal legend
+    document.querySelector("span.year").innerHTML = year;
     map.eachLayer(function(layer){
         if (layer.feature && layer.feature.properties[attribute]){
             // Access feature properties
             var props = layer.feature.properties;
-
             // Update each feature's radius based on new attribute values
             var radius = calcPropRadius(props[attribute]);
             layer.setRadius(radius);
-
-            // Add city to popup content string
-            var popupContent = "<p><b>City:</b> " + props.city + "</p>";
-            // Add formatted attribute to popup content string
-            var year = attribute;
-            popupContent += "<p><b>Elderly dependency ratio in " + year + ":</b> " + props[attribute] + " percent</p>";
-
+            // Define popup content
+            var popupContent = createPopupContent(props, attribute); 
             // Update popup content            
             popup = layer.getPopup();            
             popup.setContent(popupContent).update();
-    };
+            
+        };
     });
 };
 
@@ -147,20 +157,32 @@ function processData(data){
     return attributes;
 };
 
-// Function to create new sequence controls
-function createSequenceControls(attributes){
-    // Create range input element (slider)
-    var slider = "<input class='range-slider' type='range'></input>";
-    document.querySelector("#panel").insertAdjacentHTML('beforeend',slider);
-    // Set slider attributes
-    document.querySelector(".range-slider").max = 11;
-    document.querySelector(".range-slider").min = 0;
-    document.querySelector(".range-slider").value = 0;
-    document.querySelector(".range-slider").step = 1;
-    document.querySelector('#panel').insertAdjacentHTML('beforeend','<button class="step" id="reverse"></button>');
-    document.querySelector('#panel').insertAdjacentHTML('beforeend','<button class="step" id="forward"></button>');
-    document.querySelector('#reverse').insertAdjacentHTML('beforeend',"<img src='img/arrow_back.png'>");
-    document.querySelector('#forward').insertAdjacentHTML('beforeend',"<img src='img/arrow_forward.png'>");
+//Create new sequence controls
+function createSequenceControls(attributes){   
+    var SequenceControl = L.Control.extend({
+        options: {
+            position: 'bottomleft'
+        },
+
+        onAdd: function () {
+            // create the control container div with a particular class name
+            var container = L.DomUtil.create('div', 'sequence-control-container');
+
+            //create range input element (slider)
+            container.insertAdjacentHTML('beforeend', '<input class="range-slider" type="range" min="0" max="11" step="1" value="0">');
+
+            //add skip buttons
+            container.insertAdjacentHTML('beforeend', '<button class="step" id="reverse" title="Reverse"><img src="img/arrow_back.png"></button>'); 
+            container.insertAdjacentHTML('beforeend', '<button class="step" id="forward" title="Forward"><img src="img/arrow_forward.png"></button>');
+            
+            //disable any mouse event listeners for the container
+            L.DomEvent.disableClickPropagation(container);
+            return container;
+        }
+    });
+
+map.addControl(new SequenceControl());    
+
     // Click listener for buttons
     document.querySelectorAll('.step').forEach(function(step){
         step.addEventListener("click", function(){
@@ -194,6 +216,57 @@ function createSequenceControls(attributes){
     });
 };
 
+
+function createLegend(attributes){
+    var LegendControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+        },
+
+        onAdd: function () {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            container.innerHTML = '<p class="temporalLegend">Elderly dependency ratio in <span class="year">2008</span></p>';
+
+            //Step 1: start attribute legend svg string
+            var svg = '<svg id="attribute-legend" >';
+
+            //array of circle names to base loop on
+            var circles = ["max", "mean", "min"];
+    
+            //Step 2: loop to add each circle and text to svg string
+            for (var i=0; i<circles.length; i++){
+                // Assign the r and cy attributes  
+                var radius = calcPropRadius(dataStats[circles[i]]);  
+                var cy = 50 - radius;
+                
+                //circle string
+                svg += '<circle class="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy +
+                '" fill="#756bb1" fill-opacity="0.8" stroke="#252525" cx="65"/>';
+            
+                //evenly space out labels            
+                 var textY = i * 20 + 20;            
+
+                //text string            
+                svg += '<text id="' + circles[i] + '-text" x="95" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " percent" + '</text>';
+                    
+            };
+    
+            //close svg string
+            svg += "</svg>";
+   
+            //add attribute legend svg to container
+            container.insertAdjacentHTML('beforeend',svg);
+
+            return container;
+        }
+    });
+
+    map.addControl(new LegendControl());
+};
+
+
 // Import GeoJSON data
 function getData(){
     // Load the data
@@ -204,12 +277,18 @@ function getData(){
         .then(function(json){
             // Create an attributes array
             var attributes = processData(json);
-            // Calculate minimum data value
-            minValue = calculateMinValue(json);
+            //Call function to calculate stats
+            calcStats(json);
             // Call function to create proportional symbols
             createPropSymbols(json, attributes);
             // Call function for sequence controls
             createSequenceControls(attributes);
+            // Call function for legend
+            createLegend(attributes);
+          })
+          .catch(function(error) {
+            console.error("Error fetching data:", error);
+
         })
 };
 
