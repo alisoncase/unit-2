@@ -273,24 +273,7 @@ function addColorPicker(){
     colorPickerContainer.innerHTML = '<label for="colorPicker">Change Color:</label><input type="color" id="colorPicker" value="#998ec3">';
     // Add container to designated element
     document.getElementById("color-picker-container").appendChild(colorPickerContainer);
-    // Add event listener to color picker
-    document.getElementById("colorPicker").addEventListener("change", function(event) {
-    var newColor = event.target.value;
-  
-    // Update symbols
-    map.eachLayer(function(layer) {
-      if (layer instanceof L.CircleMarker) {
-        layer.setStyle({ fillColor: newColor });
-      }
-    });
-  
-    // Update legend (adjust selectors as needed)
-    document.getElementById("attribute-legend").querySelectorAll(".legend-circle").forEach(function(circle) {
-      circle.style.fill = newColor;
-    });
-  });
-    }
-
+    };
 
 // Add event listener to color picker
 document.getElementById("colorPicker").addEventListener("change", function(event) {
