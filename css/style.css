@@ -68,3 +68,23 @@
     margin: 0.2em 0; 
     line-height: .2;
 }
+body{
+    font-family: 'Noto Serif', serif;
+    color:rgb(32, 32, 32);
+    font-size: large;
+}
+.row {
+    min-height: 500px;
+    max-height: 600px;
+    background-image: url("img/aging.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+h1{
+    text-align: center;
+    color:  #252525;
+}
+.author{
+    text-align: center;
+    color:  #252525;
+}

@@ -66,7 +66,7 @@ function createPopupContent(properties, attribute){
 
     //add formatted attribute to panel content string
     var year = attribute;
-    popupContent += "<p><b>Elderly dependency ratio in " + year + ":</b> " + properties[attribute] + " percent</p>";
+    popupContent += "<p><b>Old-age dependency ratio in " + year + ":</b> " + properties[attribute] + " percent</p>";
 
     return popupContent;
 };
@@ -227,7 +227,7 @@ function createLegend(attributes){
             // create the control container with a particular class name
             var container = L.DomUtil.create('div', 'legend-control-container');
 
-            container.innerHTML = '<p class="temporalLegend">Elderly dependency ratio in <span class="year">2008</span></p>';
+            container.innerHTML = '<p class="temporalLegend">Old-age dependency ratio in <span class="year">2008</span></p>';
 
             //Step 1: start attribute legend svg string
             var svg = '<svg id="attribute-legend" >';
