@@ -45,8 +45,8 @@
         text-align: left; 
         border: solid gray 1px;
         position: absolute; 
-        bottom: 20px; 
-        right: 20px; 
+        bottom: 10px; 
+        right: 10px; 
         font-family: 'Noto Sans', sans-serif;
         font-size: 12px;
         color: #252525;
@@ -57,7 +57,12 @@
         text-align: center; 
     }
    
- 
+    .color-picker-container {
+        position: relative;
+      }
+    .color-picker-container label {
+        font-family: 'Noto Sans', sans-serif;
+    }
 
 .leaflet-popup-content p {
     margin: 0.2em 0; 

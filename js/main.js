@@ -267,6 +267,49 @@ function createLegend(attributes){
 };
 
 
+function addColorPicker(){
+    // Create color picker container
+    var colorPickerContainer = L.DomUtil.create('div', 'color-picker-container');
+    colorPickerContainer.innerHTML = '<label for="colorPicker">Change Color:</label><input type="color" id="colorPicker" value="#998ec3">';
+    // Add container to designated element
+    document.getElementById("color-picker-container").appendChild(colorPickerContainer);
+    // Add event listener to color picker
+    document.getElementById("colorPicker").addEventListener("change", function(event) {
+    var newColor = event.target.value;
+  
+    // Update symbols
+    map.eachLayer(function(layer) {
+      if (layer instanceof L.CircleMarker) {
+        layer.setStyle({ fillColor: newColor });
+      }
+    });
+  
+    // Update legend (adjust selectors as needed)
+    document.getElementById("attribute-legend").querySelectorAll(".legend-circle").forEach(function(circle) {
+      circle.style.fill = newColor;
+    });
+  });
+    }
+
+
+// Add event listener to color picker
+document.getElementById("colorPicker").addEventListener("change", function(event) {
+    var newColor = event.target.value;
+  
+    // Update symbols
+    map.eachLayer(function(layer) {
+      if (layer instanceof L.CircleMarker) {
+        layer.setStyle({ fillColor: newColor });
+      }
+    });
+  
+    // Update legend (adjust selectors as needed)
+    document.getElementById("attribute-legend").querySelectorAll(".legend-circle").forEach(function(circle) {
+      circle.style.fill = newColor;
+    });
+  });
+  
+
 // Import GeoJSON data
 function getData(){
     // Load the data
@@ -277,6 +320,7 @@ function getData(){
         .then(function(json){
             // Create an attributes array
             var attributes = processData(json);
+
             //Call function to calculate stats
             calcStats(json);
             // Call function to create proportional symbols
@@ -285,11 +329,12 @@ function getData(){
             createSequenceControls(attributes);
             // Call function for legend
             createLegend(attributes);
+            addColorPicker();
           })
           .catch(function(error) {
             console.error("Error fetching data:", error);
-
         })
 };
+
 
 document.addEventListener('DOMContentLoaded',createMap)
