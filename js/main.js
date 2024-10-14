@@ -13,7 +13,7 @@ function createMap(){
     // Create the map
     map = L.map('map', {
         // Center on Europe
-        center: [56.1946291535801, 15.245700543391719],
+        center: [50.07453854344629, 14.440210124247745],
         zoom: 4
     });
 
@@ -28,7 +28,7 @@ function createMap(){
     getData(map);
 };
 
-// Function to calcuate minimum value
+// Function to calcuate min, max, mean values
 function calcStats(data){
     // Create empty array to store all data values
     var allValues = [];
@@ -42,10 +42,10 @@ function calcStats(data){
               allValues.push(value);
         }
     }
-    //get min, max, mean stats for our array
+    //Get min, max, mean stats for our array
     dataStats.min = Math.min(...allValues);
     dataStats.max = Math.max(...allValues);
-    //calculate meanValue
+    //Calculate meanValue
     var sum = allValues.reduce(function(a, b){return a+b;});
     dataStats.mean = sum/allValues.length;
 };
@@ -61,10 +61,10 @@ function calcPropRadius(attValue) {
 
 // Function to define content for popups
 function createPopupContent(properties, attribute){
-    //add city to popup content string
+    //Add city to popup content string
     var popupContent = "<p><b>City:</b> " + properties.city + "</p>";
 
-    //add formatted attribute to panel content string
+    //Add formatted attribute to content string
     var year = attribute;
     popupContent += "<p><b>Old-age dependency ratio in " + year + ":</b> " + properties[attribute] + " percent</p>";
 
@@ -75,8 +75,6 @@ function createPopupContent(properties, attribute){
 function pointToLayer(feature, latlng, attributes){
     // Assign the current attribute based on the first index of the attributes array
     var attribute = attributes[0];
-    // Check
-    console.log(attribute);
 
     //Create marker options
     var options = {
@@ -116,7 +114,7 @@ function createPropSymbols(data, attributes){
 // Function to resize proportional symbols according to new attribute values by year
 function updatePropSymbols(attribute){
     var year = attribute
-    //update temporal legend
+    // Update temporal legend
     document.querySelector("span.year").innerHTML = year;
     map.eachLayer(function(layer){
         if (layer.feature && layer.feature.properties[attribute]){
@@ -165,17 +163,17 @@ function createSequenceControls(attributes){
         },
 
         onAdd: function () {
-            // create the control container div with a particular class name
+            // Create the control container div with a particular class name
             var container = L.DomUtil.create('div', 'sequence-control-container');
 
-            //create range input element (slider)
+            //Create range input element (slider)
             container.insertAdjacentHTML('beforeend', '<input class="range-slider" type="range" min="0" max="11" step="1" value="0">');
 
-            //add skip buttons
+            //Add skip buttons
             container.insertAdjacentHTML('beforeend', '<button class="step" id="reverse" title="Reverse"><img src="img/arrow_back.png"></button>'); 
             container.insertAdjacentHTML('beforeend', '<button class="step" id="forward" title="Forward"><img src="img/arrow_forward.png"></button>');
             
-            //disable any mouse event listeners for the container
+            //Disable any mouse event listeners for the container
             L.DomEvent.disableClickPropagation(container);
             return container;
         }
@@ -224,39 +222,39 @@ function createLegend(attributes){
         },
 
         onAdd: function () {
-            // create the control container with a particular class name
+            // Create the control container with a particular class name
             var container = L.DomUtil.create('div', 'legend-control-container');
 
             container.innerHTML = '<p class="temporalLegend">Old-age dependency ratio in <span class="year">2008</span></p>';
 
-            //Step 1: start attribute legend svg string
+            //Start attribute legend svg string
             var svg = '<svg id="attribute-legend" >';
 
-            //array of circle names to base loop on
+            //Array of circle names to base loop on
             var circles = ["max", "mean", "min"];
     
-            //Step 2: loop to add each circle and text to svg string
+            //Loop to add each circle and text to svg string
             for (var i=0; i<circles.length; i++){
                 // Assign the r and cy attributes  
                 var radius = calcPropRadius(dataStats[circles[i]]);  
                 var cy = 50 - radius;
                 
-                //circle string
+                //Circle string
                 svg += '<circle class="legend-circle" id="' + circles[i] + '" r="' + radius + '"cy="' + cy +
                 '" fill="#756bb1" fill-opacity="0.8" stroke="#252525" cx="65"/>';
             
-                //evenly space out labels            
+                //Evenly space out labels            
                  var textY = i * 20 + 20;            
 
-                //text string            
+                //Text string            
                 svg += '<text id="' + circles[i] + '-text" x="95" y="' + textY + '">' + Math.round(dataStats[circles[i]]*100)/100 + " percent" + '</text>';
                     
             };
     
-            //close svg string
+            //Close svg string
             svg += "</svg>";
    
-            //add attribute legend svg to container
+            //Add attribute legend svg to container
             container.insertAdjacentHTML('beforeend',svg);
 
             return container;
@@ -271,7 +269,7 @@ function addColorPicker(){
     // Create color picker container
     var colorPickerContainer = L.DomUtil.create('div', 'color-picker-container');
     colorPickerContainer.innerHTML = '<label for="colorPicker">Change Color:</label><input type="color" id="colorPicker" value="#998ec3">';
-    // Add container to designated element
+    // Add container
     document.getElementById("color-picker-container").appendChild(colorPickerContainer);
     };
 
@@ -286,7 +284,7 @@ document.getElementById("colorPicker").addEventListener("change", function(event
       }
     });
   
-    // Update legend (adjust selectors as needed)
+    // Update legend
     document.getElementById("attribute-legend").querySelectorAll(".legend-circle").forEach(function(circle) {
       circle.style.fill = newColor;
     });
