@@ -9,25 +9,30 @@
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="lib/leaflet/leaflet.css">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <!--[if IE<9]>
             <link rel="stylesheet" href="css/style.ie.css">
         <![endif]-->
-               
+        <style>
+            .serif {
+                font-family: 'Noto Serif', serif;
+            }
+        </style>
     </head>
     <body>
-        <div class="content">
-          <div class="row" style="background-image: url('img/aging.png'); background-size:cover; background-repeat: no-repeat">
-            <div class="center title">
-              <h1><b>Europe’s Aging Cities</b></h1>
-              <p class="author"><b>Alison Case | October 2024</b></p>
+        <div class="container">
+            <div class="row" style="background-image: url('img/aging.png'); background-size:cover; background-repeat: no-repeat">
+                <div class="col text-center title serif">
+                    <h1><b>Europe’s Aging Cities</b></h1>
+                    <p class="author"><b>Alison Case | October 2024</b></p>
+                </div>
             </div>
-          </div>
         </div>
-      </body>
-           <!--text content block-->
-           <div class="content">
-               <div class="center">
-                   <p>Europe’s population is getting older, quickly. With more older people and less working-age people in the total population, 
+        <!--text content block-->
+        <div class="container">
+            <div class="container content-container">
+                <div class="col text-left serif">
+                    <p>Europe’s population is getting older, quickly. With more older people and less working-age people in the total population, 
                     <a href="https://commission.europa.eu/system/files/2023-01/Demography_report_2022_0.pdf">a 2023 report from the European Union (EU)</a> 
                     estimates that by 2050, about 30 percent of the European population will be over the age of 65 and there will be less than two working 
                     age adults for each elderly person. This equates to an old-age dependency ratio – the ratio of people aged 65 or older, to people 
@@ -51,42 +56,52 @@
                         comprehensive recreational activities, affordable housing, support and social benefits, low-threshold information, an accessible public 
                         transport network, and its own Senior Citizens’ Advocate for the city.</p>
                     <p>Explore these changing demographics in major European cities, including some cities outside the EU, in the map below.</p>
-               </div>
-           </div>
+                </div>
+            </div>
+        </div>
         <div id="mydiv"></div>
-        <div id="map"></div>
+        <div class="container">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="color-picker-container">
+                    <label for="colorPicker" style="font-family: 'Noto Sans', sans-serif;">Change Color:</label>
+                    <input type="color" id="colorPicker" value="#998ec3">
+                </div>
+            </div>
+        </div>
         <div id="panel"></div>
         <script type="text/javascript" src="lib/leaflet/leaflet-src.js"></script>
         <script type="text/javascript" src="lib/leaflet/leaflet-providers.js"></script>
-        <label for="colorPicker" style="font-family: 'Noto Sans', sans-serif;">Change Color:</label>
-        <input type="color" id="colorPicker" value="#998ec3">
         <!--put your external script links here-->
         <!--<script type="text/javascript" src="js/main.js"></script>-->
         <!--<script type="text/javascript" src="js/quickstartTutorial.js"></script>-->
         <script type="text/javascript" src="js/main.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <!--credits-->
-        <div class="content no-margin">
-            <div class="center">
-                <div class="credits">
-                    <p><b>Credits:</b></p>
-                    <p>Map created with 
-                        <a href="https://leafletjs.com/Leaflet">Leaflet</a></p>
-                    <p>Data from the 
-                        <a href="https://stats.oecd.org">Organization for Economic Cooperation and Development (OECD)</a></p>
-                    <p>“The impact of demographic change in Europe,” 
-                        <a href="https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/new-push-european-democracy/impact-demographic-change-europe_en">European Commission</a>
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container">
+                <div class="credits text-center">
+                        <p><b>Credits:</b></p>
+                        <p>Map created with 
+                            <a href="https://leafletjs.com/Leaflet">Leaflet</a></p>
+                        <p>Data from the 
+                            <a href="https://stats.oecd.org">Organization for Economic Cooperation and Development (OECD)</a></p>
+                        <p>“The impact of demographic change in Europe,” 
+                            <a href="https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/new-push-european-democracy/impact-demographic-change-europe_en">European Commission</a>
+                            </p>
+                        <p>“Eurobarometer: Demographic change in Europe,”
+                            <a href="https://europa.eu/eurobarometer/surveys/detail/3112">European Union</a>
+                            </p>
+                        <p>“Age-friendly World: Vienna,”
+                            <a href="https://extranet.who.int/agefriendlyworld/network/vienna/">World Health Organization</a>
+                            </p>
+                        <p>Cover image by
+                            <a href="https://stock.adobe.com/contributor/207686895/backup-studio">backup-studio/stock.adobe.com</a>
                         </p>
-                    <p>“Eurobarometer: Demographic change in Europe,”
-                        <a href="https://europa.eu/eurobarometer/surveys/detail/3112">European Union</a>
-                        </p>
-                    <p>“Age-friendly World: Vienna,”
-                        <a href="https://extranet.who.int/agefriendlyworld/network/vienna/">World Health Organization</a>
-                        </p>
-                    <p>Cover image by
-                        <a href="https://stock.adobe.com/contributor/207686895/backup-studio">backup-studio/stock.adobe.com</a>
-                    </p>
                 </div>
             </div>
-        </div>
+        </footer>
     </body>
 </html>
